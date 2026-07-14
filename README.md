@@ -1,3 +1,5 @@
+---
+
 ```markdown
 # Chess Titled Players Analytics Pipeline
 
@@ -101,6 +103,19 @@ docker-compose up -d
 
 ---
 
+## 📊 Roadmap Pengerjaan
+
+| Status       | Minggu | Pekerjaan |
+|--------------|--------|---------|
+| ✅ Done      | 1      | Setup Airflow + Docker Compose |
+| 🔄 In Progress | 2    | Extract Layer + Rate Limit Handling |
+| ⏳ Planned   | 3      | Load Layer (MongoDB & PostgreSQL) |
+| ⏳ Planned   | 4      | Transform & Data Modeling |
+| ⏳ Planned   | 5      | Data Quality & Consistency Check |
+| ⏳ Planned   | 6      | Dashboard + Dokumentasi Lengkap |
+
+---
+
 ## 📌 Lessons Learned & Challenges
 
 *(Akan di-update secara berkala)*
@@ -117,7 +132,7 @@ Tujuan utama adalah membangun pemahaman mendalam mengenai **production-grade dat
 
 ---
 
-**Made for learning purpose**
+**Made with ❤️ for learning purpose**
 
 ---
 
