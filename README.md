@@ -34,18 +34,7 @@ Chess.com API
 ## 📁 Project Structure
 
 ```
-.
-├── dags/
-│   └── chess_medallion_pipeline.py          # Main DAG
-├── dags/include/
-│   ├── extract/
-│   ├── transform/
-│   └── load/
-├── staging/
-├── logs/
-├── docker-compose.yml
-├── .env.example
-└── README.md
+![Project Stucture](assets/screenshots/project_structure.png)
 ```
 
 ---
@@ -114,13 +103,15 @@ def run_extract(**kwargs):
 ## 📊 Airflow UI Screenshots
 
 **1. DAG Overview**  
-![DAG View](assets/screenshots/dag_view.png)
+![DAG View](assets/screenshots/overview.png)
 
 **2. Trigger DAG with Config**  
-![Trigger with Config](assets/screenshots/trigger_config.png)
+![extract_chess_data](assets/screenshots/extract_chess_data.png)
+![transform_and_load_silver](assets/screenshots/transform_and_load_silver.png)
+![load_to_gold](assets/screenshots/load_to_gold.png)
 
 **3. Task Graph**  
-![Graph View](assets/screenshots/graph_view.png)
+![Graph View](assets/screenshots/task.png)
 
 *(Place your screenshots in `assets/screenshots/`)*
 
@@ -130,53 +121,75 @@ def run_extract(**kwargs):
 
 Main table: **`gold_player_stats`**
 
-### 1. Player Performance Summary
+### 1. Player Match Statistic
 
 ```sql
 SELECT 
-    username,
-    total_games,
-    avg_rating,
-    win_rate,
-    loss_rate,
-    draw_rate,
-    avg_duration_minutes,
-    last_updated
-FROM gold_player_stats
+    username, 
+    total_games, 
+    ROUND(avg_rating, 0) AS avg_elo_lawan,
+    ROUND(win_rate::numeric * 100, 1) || '%' AS win_rate,
+    ROUND(loss_rate::numeric * 100, 1) || '%' AS loss_rate,
+    ROUND(draw_rate::numeric * 100, 1) || '%' AS draw_rate,
+    ROUND(avg_duration_minutes, 1) AS avg_minute_per_game
+FROM analytics.gold_player_stats
+WHERE username = 'Hikaru';
+```
+result:
+![Graph View](assets/screenshots/1.png)
+
+### 2. Player Detailed Time Class Match Statistic
+
+```sql
+SELECT 
+    time_class,
+    COUNT(*) AS total_games,
+    ROUND(
+        SUM(CASE WHEN outcome = 'win' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) * 100, 
+        1
+    ) || '%' AS win_rate,
+    ROUND(
+        SUM(CASE WHEN outcome = 'loss' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) * 100, 
+        1
+    ) || '%' AS loss_rate,
+    ROUND(
+        SUM(CASE WHEN outcome = 'draw' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) * 100, 
+        1
+    ) || '%' AS draw_rate,
+    ROUND(AVG(duration_minutes), 1) AS avg_duration_minutes,
+    ROUND(AVG(white_rating), 0) AS avg_opponent_rating
+FROM analytics.silver_games
+WHERE source_username = 'hikaru'  -- Ganti dengan username yang ingin dianalisis
+GROUP BY time_class
 ORDER BY total_games DESC;
 ```
+![Graph View](assets/screenshots/2.png)
 
-### 2. Top Players by Win Rate (min. 30 games)
+### 3. Player Last Matchmaking (Win)
 
 ```sql
 SELECT 
-    username,
-    total_games,
-    ROUND(avg_rating, 2) as avg_rating,
-    ROUND(win_rate, 2) as win_rate,
-    ROUND(loss_rate, 2) as loss_rate,
-    ROUND(draw_rate, 2) as draw_rate
-FROM gold_player_stats
-WHERE total_games >= 30
-ORDER BY win_rate DESC
+    CASE 
+        WHEN LOWER(white_username) = 'hikaru' THEN black_username 
+        ELSE white_username 
+    END AS "Nama Lawan",
+    CASE 
+        WHEN LOWER(white_username) = 'hikaru' THEN black_rating 
+        ELSE white_rating 
+    END AS "Rating Lawan",
+    time_class AS "Kategori",
+    end_time AS "Waktu Main"
+FROM analytics.silver_games
+WHERE LOWER(source_username) = 'hikaru'
+  AND (
+      (LOWER(white_username) = 'hikaru' AND outcome = 'win')
+      OR 
+      (LOWER(black_username) = 'hikaru' AND outcome = 'loss')
+  )
+ORDER BY "Rating Lawan" DESC
 LIMIT 10;
 ```
-
-### 3. Player Detail
-
-```sql
-SELECT 
-    username,
-    total_games,
-    avg_rating,
-    win_rate,
-    loss_rate,
-    draw_rate,
-    avg_duration_minutes
-FROM gold_player_stats
-WHERE username = 'hikaru';
-```
-
+![Graph View](assets/screenshots/3.png)
 ---
 
 ## 🛠️ Technologies
