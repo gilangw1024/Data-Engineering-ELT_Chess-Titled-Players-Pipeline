@@ -1,0 +1,26 @@
+# ==========================================
+# CHESS ANALYTICS PIPELINE - PRODUCTION DEPENDENCIES
+# ==========================================
+
+# --- Core Airflow & Database Connectors ---
+# Pinning minor version untuk stabilitas, tapi tetap menerima patch security updates
+apache-airflow==2.10.0
+pymongo~=4.8.0
+psycopg2-binary~=2.9.9
+requests~=2.31.0
+python-dotenv~=1.0.0
+
+# --- Data Processing & Validation ---
+# Pandas cukup berat, pastikan versi kompatibel dengan numpy yang dibawa Airflow
+pandas~=2.2.0
+pydantic~=2.7.0
+
+# --- Logging & Utilities ---
+python-json-logger~=2.0.7
+
+# --- Catatan Penting ---
+# 1. Black, Flake8, dan Pytest DIHAPUS dari sini karena hanya untuk dev.
+# 2. Gunakan operator ~= (compatible release) untuk menerima patch update 
+#    (misal 2.9.9 -> 2.9.10) tapi menolak minor update yang mungkin breaking (2.10.0).
+# 3. Jika menggunakan Docker, pastikan base image Airflow sudah memiliki 
+#    dependencies sistem seperti libpq-dev (untuk psycopg2).
