@@ -116,7 +116,6 @@ load_to_gold
 **3. Task Graph**  
 ![Graph View](assets/screenshots/task.png)
 
-*(Place your screenshots in `assets/screenshots/`)*
 
 ---
 
