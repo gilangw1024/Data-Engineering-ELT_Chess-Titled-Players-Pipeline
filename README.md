@@ -1,4 +1,4 @@
-```markdown
+
 # Chess Medallion Pipeline
 
 An **ETL Pipeline** built with Apache Airflow implementing the **Medallion Architecture** (Bronze → Silver → Gold) for Chess.com game data.
