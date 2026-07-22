@@ -33,9 +33,9 @@ Chess.com API
 
 ## 📁 Project Structure
 
-```
+
 ![Project Stucture](assets/screenshots/project_structure.png)
-```
+
 
 ---
 
