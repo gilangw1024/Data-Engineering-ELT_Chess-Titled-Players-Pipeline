@@ -105,9 +105,12 @@ def run_extract(**kwargs):
 **1. DAG Overview**  
 ![DAG View](assets/screenshots/overview.png)
 
-**2. Trigger DAG with Config**  
+**2. Logs**  
+extract_chess_data
 ![extract_chess_data](assets/screenshots/extract_chess_data.png)
+transform_and_load_silver
 ![transform_and_load_silver](assets/screenshots/transform_and_load_silver.png)
+load_to_gold
 ![load_to_gold](assets/screenshots/load_to_gold.png)
 
 **3. Task Graph**  
@@ -163,6 +166,7 @@ WHERE source_username = 'hikaru'  -- Ganti dengan username yang ingin dianalisis
 GROUP BY time_class
 ORDER BY total_games DESC;
 ```
+result:
 ![Graph View](assets/screenshots/2.png)
 
 ### 3. Player Last Matchmaking (Win)
@@ -189,6 +193,7 @@ WHERE LOWER(source_username) = 'hikaru'
 ORDER BY "Rating Lawan" DESC
 LIMIT 10;
 ```
+result:
 ![Graph View](assets/screenshots/3.png)
 ---
 
@@ -230,6 +235,3 @@ LIMIT 10;
 - Easily extensible for more players and time ranges
 
 ---
-
-**Built with ❤️ for Chess Analytics**
-```
