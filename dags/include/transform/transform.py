@@ -129,7 +129,7 @@ def clean_and_validate_games(raw_games: List[Dict]) -> Tuple[pd.DataFrame, List[
                 extraction_timestamp=game.get('extraction_timestamp'),
             )
 
-                       # Derived fields
+            # Derived fields
             validated.rating_diff = validated.white_rating - validated.black_rating
 
             # FIX: API Bulanan Chess.com tidak punya field 'winner' di root.
@@ -144,9 +144,18 @@ def clean_and_validate_games(raw_games: List[Dict]) -> Tuple[pd.DataFrame, List[
             else:
                 validated.outcome = 'draw'      # Seri (stalemate, agreement, repetition, dll)
 
+            # FIX: Perhitungan durasi dengan fallback ke time_control
             start_unix = game.get('start_time', 0)
-            if start_unix and start_unix > 0:
-                validated.duration_minutes = round((end_time_unix - start_unix) / 60, 2)
+            if start_unix is not None and start_unix > 0:
+                duration_seconds = end_time_unix - start_unix
+                validated.duration_minutes = round(duration_seconds / 60, 2)
+            else:
+                time_control = str(game.get('time_control', '0'))
+                if '+' in time_control:
+                    base_time = int(time_control.split('+')[0])
+                    validated.duration_minutes = base_time / 60  # Konversi detik ke menit
+                else:
+                    validated.duration_minutes = 0.0
 
             valid.append(validated.model_dump())
 

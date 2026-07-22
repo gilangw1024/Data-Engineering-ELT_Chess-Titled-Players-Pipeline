@@ -226,7 +226,7 @@ def load_to_gold(**kwargs) -> Dict:
                     COALESCE(SUM(CASE WHEN outcome = 'win' THEN 1 ELSE 0 END)::NUMERIC / NULLIF(COUNT(*), 0), 0) AS win_rate,
                     COALESCE(SUM(CASE WHEN outcome = 'loss' THEN 1 ELSE 0 END)::NUMERIC / NULLIF(COUNT(*), 0), 0) AS loss_rate,
                     COALESCE(SUM(CASE WHEN outcome = 'draw' THEN 1 ELSE 0 END)::NUMERIC / NULLIF(COUNT(*), 0), 0) AS draw_rate,
-                    COALESCE(AVG(duration_minutes), 0) AS avg_duration_minutes,
+                    COALESCE(AVG(NULLIF(duration_minutes, 0)), 0) AS avg_duration_minutes,
                     CURRENT_TIMESTAMP AS last_updated
                 FROM (
                     SELECT white_username AS username, white_rating AS rating, outcome, duration_minutes
